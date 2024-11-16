@@ -10,10 +10,18 @@ __all__ = [
 
 class RepositoryManager:
     """ Класс для загрузки и удаления репозитория """
+    _git_clone_cmd: list
+    _npm_install_cmd: list
+
     def __init__(self, repo_url: str, repo_name: str):
         self.repo_url = repo_url
         self.repo_name = repo_name
         self.repo_path = os.path.join(os.getcwd(), repo_name)
+        self._git_clone_cmd = ['git', 'clone', self.repo_url, self.repo_path]
+        self._npm_install_cmd = [
+            subprocess.run(['where', 'npm'], capture_output=True).stdout.strip().splitlines()[1],
+            'install'
+        ]
 
     def __enter__(self) -> None:
         self._load_repo_with_dependencies()
@@ -22,11 +30,11 @@ class RepositoryManager:
         """ Клонирование репозитория с GitHub """
         print(f"Загружаю репозиторий {self.repo_name} с его зависимостями...")
         if not os.path.exists(self.repo_path):
-            subprocess.run(['git', 'clone', self.repo_url, self.repo_path],
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(self._git_clone_cmd,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
-        subprocess.run(['C:/Program Files/nodejs/npm.cmd', 'install'],
-                       cwd=self.repo_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(self._npm_install_cmd,
+                       cwd=self.repo_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
     def __exit__(self, exc_type, *_):
         if exc_type is not None:

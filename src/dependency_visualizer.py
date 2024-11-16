@@ -33,7 +33,6 @@ class DependencyVisualizer:
         for dep_name, dep_version in dependencies.items():
             self.graph.edge(package_name, dep_name)
             dep_repo_path = os.path.join(dependencies_path, dep_name)
-            print(dep_repo_path)
             self.build_graph(dep_name, dep_repo_path, dependencies_path)
 
     def save_graph(self) -> None:
