@@ -39,7 +39,7 @@ class RepositoryManager:
         """ Удаляет директорию с клонированным репозиторием """
         if os.path.exists(self.repo_path) and os.path.isdir(self.repo_path):
             try:
-                shutil.rmtree(self.repo_path, onerror=self._remove_readonly)
+                shutil.rmtree(self.repo_path, onexc=self._remove_readonly)
             except Exception as e:
                 print(f"Ошибка при удалении репозитория: {e}")
 
